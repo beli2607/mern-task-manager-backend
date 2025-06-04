@@ -1,12 +1,18 @@
 const Task = require('../models/Task');
 
 exports.getTasks = async (req, res) => {
-    const tasks = await Task.find();
+    const tasks = await Task.find({ user: req.user._id }); // Only return this user's tasks
     res.json(tasks);
 };
 
 exports.createTask = async (req, res) => {
-    const task = new Task(req.body);
+    const { title } = req.body;
+
+    const task = new Task({
+        title,
+        user: req.user._id // Automatically link to logged-in user
+    });
+
     const saved = await task.save();
     res.status(201).json(saved);
 };
